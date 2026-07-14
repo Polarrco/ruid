@@ -1,10 +1,9 @@
-/// <reference types="node" />
 export declare class Ruid {
     static getUuidV1(): string;
     static getUuidV4(): string;
     static transformToBuffer(id: string): Buffer;
     static transformToString(id: Buffer): string;
-    static checkRuidString(ruid: string): boolean;
+    static checkRuidString(ruid: unknown): ruid is string;
     fromUuid(uuid: string): Ruid;
     toString(): string;
     toFriendlyString(): string;
