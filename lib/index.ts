@@ -1,6 +1,4 @@
-﻿import { StringDecoder } from "string_decoder";
-import validator from "validator";
-import { v1 as uuidv1, v4 as uuidv4 } from "uuid";
+import { validate as validateUuid, v1 as uuidv1, v4 as uuidv4 } from "uuid";
 
 /**
  * Optimized Global Unique ID for DB store and query.
@@ -29,14 +27,14 @@ export class Ruid {
   /**
    * Get a v1 uuid.
    */
-  public static getUuidV1() {
+  public static getUuidV1(): string {
     return uuidv1().toUpperCase();
   }
 
   /**
    * Get a v4 uuid.
    */
-  public static getUuidV4() {
+  public static getUuidV4(): string {
     return uuidv4().toUpperCase();
   }
 
@@ -48,36 +46,36 @@ export class Ruid {
     return Ruid.decodeIdBuffer(id);
   }
 
-  public static checkRuidString(ruid: string) {
-    return typeof ruid === "string" && ruid.length === 32 && validator.isHexadecimal(ruid);
+  public static checkRuidString(ruid: unknown): ruid is string {
+    return typeof ruid === "string" && /^[0-9a-f]{32}$/i.test(ruid);
   }
 
-  public fromUuid(uuid: string) {
+  public fromUuid(uuid: string): Ruid {
     const ruidString = Ruid.convertUuidToRuid(uuid);
 
     return new Ruid(ruidString);
   }
 
-  public toString() {
+  public toString(): string {
     return this.ruidString;
   }
 
-  public toFriendlyString() {
+  public toFriendlyString(): string {
     return `${this.ruidString.slice(0, 4)}-${this.ruidString.slice(4, 8)}-${this.ruidString.slice(
       8,
       16
     )}-${this.ruidString.slice(16, 20)}-${this.ruidString.slice(20, 32)}`;
   }
 
-  public toJSON() {
+  public toJSON(): string {
     return this.ruidString;
   }
 
-  public toSqlString() {
+  public toSqlString(): string {
     return `X'${this.ruidString}'`;
   }
 
-  public toBuffered() {
+  public toBuffered(): Buffer {
     return this.ruidBuffer;
   }
 
@@ -99,7 +97,10 @@ export class Ruid {
         throw new Error(`Invliad string type reference RUID.`);
       }
 
-      const ruidString = ruidStringOrRuidBuffer ? ruidStringOrRuidBuffer : Ruid.convertUuidToRuid(uuidv1());
+      let ruidString = ruidStringOrRuidBuffer;
+      if (ruidString === undefined || ruidString.length === 0) {
+        ruidString = Ruid.convertUuidToRuid(uuidv1());
+      }
 
       this.ruidString = ruidString.toUpperCase();
       this.ruidBuffer = Buffer.from(ruidString, "hex");
@@ -107,9 +108,7 @@ export class Ruid {
   }
 
   private static decodeIdBuffer(id: Buffer): string {
-    const decoder = new StringDecoder("hex");
-
-    return decoder.end(id).toUpperCase();
+    return id.toString("hex").toUpperCase();
   }
 
   private static encodeIdString(id: string): Buffer {
@@ -117,7 +116,7 @@ export class Ruid {
   }
 
   private static convertUuidToRuid(uuid: string): string {
-    if (!validator.isUUID(uuid)) {
+    if (!validateUuid(uuid)) {
       throw new Error(`Invliad reference UUID.`);
     }
 

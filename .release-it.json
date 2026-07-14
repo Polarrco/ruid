@@ -1,17 +1,13 @@
 {
   "git": {
-    "commitMessage": "chore(release): release v${version}"
+    "commitMessage": "chore(release): release v${version}",
+    "requireBranch": "master",
+    "tagName": "${version}"
+  },
+  "npm": {
+    "publish": false
   },
   "github": {
     "release": true
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "plugins": {
-    "@release-it/conventional-changelog": {
-      "preset": "angular",
-      "infile": "CHANGELOG.md"
-    }
   }
 }
