@@ -1,6 +1,6 @@
 {
   "name": "@polarrco/ruid",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "private": false,
   "description": "The optimised primary key generator for Database, based on UUID and cluster safe.",
   "repository": {
